@@ -20,6 +20,7 @@ require("lazy").setup({
             configs.setup({
                 ensure_installed = {
                     "lua", "vim", "vimdoc", "javascript", "html", "dart",
+                    "yaml",
                 },
                 sync_install = false,
                 highlight = { enable = true },
