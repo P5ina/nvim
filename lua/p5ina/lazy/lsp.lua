@@ -102,11 +102,29 @@ return {
           -- vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
           -- vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
           -- vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if client and client.supports_method('textDocument/formatting') then
+            vim.api.nvim_create_autocmd('BufWritePre', {
+              buffer = event.buf,
+              callback = function()
+                vim.lsp.buf.format({
+                  bufnr = event.buf,
+                  filter = function(c)
+                    if c.name == 'ts_ls' then
+                      return false
+                    end
+                    return true
+                  end,
+                })
+              end,
+            })
+          end
         end,
       })
 
       require('mason-lspconfig').setup({
-        ensure_installed = {'lua_ls', 'rust_analyzer'},
+        ensure_installed = {'lua_ls', 'rust_analyzer', 'biome', 'ts_ls'},
         handlers = {
           -- this first function is the "default handler"
           -- it applies to every language server without a "custom handler"
